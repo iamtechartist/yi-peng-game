@@ -1,0 +1,123 @@
+<!doctype html>
+<!--
+  LANTERN NIGHT: guide your khom loi up through thousands of lanterns rising off the Ping river at Yi Peng,
+  through the clouds and into the open night sky. A static three.js site (no build step): modules in /js,
+  styles in /css, models in /assets (made by the Blender scripts in /blender). Serve it from any static server.
+  URL switches: ?tier=low|medium|high  ?debug (window.__ln)  ?shot=wide|bokeh|river|moon|… (look-dev frames)
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lantern Night</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Cpath d=%22M9 6h14l2 18H7z%22 fill=%22%23ffb547%22/%3E%3Ccircle cx=%2216%22 cy=%2224%22 r=%222.5%22 fill=%22%23fff3c4%22/%3E%3C/svg%3E">
+<meta name="description" content="Yi Peng in Chiang Mai: guide your paper lantern up through thousands of others, through the clouds and into the moonlit sky.">
+<link rel="stylesheet" href="css/ui.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body class="loading">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-lantern" viewBox="0 0 24 24"><path d="M7.5 4h9l1.4 13.2a1 1 0 0 1-1 1.1H7.1a1 1 0 0 1-1-1.1z"/><path d="M12 15.2c-1 0-1.6-.8-1.6-1.6 0-1.1 1.6-2.4 1.6-2.4s1.6 1.3 1.6 2.4c0 .8-.6 1.6-1.6 1.6z"/></symbol>
+  <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 21c-3.3 0-5.5-2.3-5.5-5.2 0-3.6 3.3-5.6 3.9-9.8 2.4 1.4 3.4 3.6 3.2 5.6 1-.6 1.6-1.7 1.8-2.6 1.4 1.5 2.1 3.2 2.1 5.2C17.5 18.8 15.3 21 12 21z"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+  <symbol id="i-wind" viewBox="0 0 24 24"><path d="M3 9h11a3 3 0 1 0-3-3M3 15h15a3 3 0 1 1-3 3M3 12h7"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .5-8 5.5 5.5 0 0 0-10.6 1.4A3.3 3.3 0 0 0 7 18z"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+  <symbol id="i-restart" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v4.5h4.5"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-exit" viewBox="0 0 24 24"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17h.01"/></symbol>
+</svg>
+
+<canvas id="gl" tabindex="-1" aria-label="Lantern Night, 3D view"></canvas>
+
+<div id="hud" aria-label="Flight">
+  <div id="cinebars" aria-hidden="true"></div>
+  <div id="beat" class="glass pill hide-cine" role="status" aria-live="polite">
+    <div class="bic"><svg class="i"><use href="#i-lantern"/></svg><svg class="prog" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="16" fill="none" stroke="rgba(255,181,71,0.9)" stroke-width="2.2" stroke-linecap="round" id="beatProg" stroke-dasharray="0 101"/></svg></div>
+    <div class="stx"><span class="lbl" id="beatLbl">Lift-off</span><span id="litLine" class="num"><b id="litN">1</b><span class="of" id="litOf"> of 5</span></span></div>
+    <div class="rt"><div id="mult" class="num" aria-label="Time">0:00.0</div><div id="pts" class="num">0 near</div></div>
+  </div>
+  <div id="warnings" aria-live="assertive">
+    <div class="warn glass pill" id="wWind"><svg class="i"><use href="#i-wind"/></svg>GUST</div>
+    <div class="warn glass pill red" id="wFlame"><svg class="i"><use href="#i-flame"/></svg>STOKE SPENT</div>
+    <div class="warn glass pill moon" id="wCloud"><svg class="i"><use href="#i-cloud"/></svg>IN THE CLOUD</div>
+  </div>
+  <div id="flight" class="glass pill hide-cine" aria-label="Altitude and climb">
+    <div class="alt" aria-hidden="true"><i id="altBar"></i><span class="cl" id="altCloud"></span></div>
+    <div class="readout"><span class="lbl">Altitude</span><span class="val num"><span id="rAlt">0</span><span class="unit">M</span></span></div>
+    <div class="readout"><span class="lbl">Climb</span><span class="val num"><span id="rClimb">0</span><span class="unit">M/S</span></span></div>
+  </div>
+  <div id="flameBox" class="glass pill hide-cine" aria-label="Flame">
+    <div class="ring"><svg class="r" viewBox="0 0 42 42"><circle class="bg" cx="21" cy="21" r="17" fill="none" stroke-width="3.5"/><circle class="fg" id="flameRing" cx="21" cy="21" r="17" fill="none" stroke="#FFB547" stroke-width="3.5" stroke-dasharray="106.8 106.8"/></svg><div class="ic"><svg class="i"><use href="#i-flame"/></svg></div></div>
+    <div class="readout"><span class="lbl">Stoke <kbd class="sk">Space</kbd></span><span class="val num"><span id="rFlame">100</span><span class="unit">%</span></span></div>
+  </div>
+  <div id="brackets" aria-hidden="true"></div>
+  <div id="pops" aria-hidden="true"></div>
+  <div id="toasts" aria-live="polite"></div>
+  <div id="ctrlCard" class="glass card" role="note" aria-label="Controls"></div>
+  <div id="center"><div id="bigmsg"></div><div id="bigsub"></div></div>
+  <div id="fps" class="num"></div>
+</div>
+
+<div id="menus">
+  <section id="title" class="panel glass card" aria-label="Main menu">
+    <h1 class="logo">Lantern <b>Night</b></h1>
+    <div class="tag">Yi Peng, Chiang Mai. Thousands of lanterns lift off the river at once. <b>Yours is the crimson one.</b> Climb through the crush, the crosscurrents, the gust, the falling ash and the cloud, into the moonlight.</div>
+    <div class="menu" role="menu">
+      <button class="btn primary" data-act="start" role="menuitem"><svg class="i"><use href="#i-lantern"/></svg>Let go<span class="sp"></span><span class="kbd num" id="titleBest"></span></button>
+      <button class="btn" data-act="settings" role="menuitem"><svg class="i"><use href="#i-gear"/></svg>Settings</button>
+    </div>
+    <div class="medals" id="titleMedals"></div>
+    <div class="foot">Touch a lantern and you fall back to the start of the beat (+2 s); pass one closely and win back a quarter second. <b>A / D</b>, arrows or the mouse to steer · <b>Space</b> stoke · <b>Shift</b> ease off.</div>
+  </section>
+
+  <section id="settings" class="panel glass card center" aria-label="Settings">
+    <h2>Settings</h2>
+    <div class="scroll" id="settingsBody"></div>
+    <div class="row"><button class="btn primary" data-act="back"><svg class="i"><use href="#i-back"/></svg>Done</button></div>
+  </section>
+
+  <section id="pause" class="panel glass card center" aria-label="Paused">
+    <h2>Paused</h2>
+    <div class="menu" style="margin-top:12px">
+      <button class="btn primary" data-act="resume"><svg class="i"><use href="#i-play"/></svg>Resume<span class="sp"></span><span class="kbd">ESC</span></button>
+      <button class="btn" data-act="retry"><svg class="i"><use href="#i-restart"/></svg>Start again<span class="sp"></span><span class="kbd">R</span></button>
+      <button class="btn" data-act="settings"><svg class="i"><use href="#i-gear"/></svg>Settings</button>
+      <button class="btn" data-act="quit"><svg class="i"><use href="#i-exit"/></svg>Back to the river</button>
+    </div>
+  </section>
+
+  <section id="results" class="panel glass card center" aria-label="Results">
+    <div class="rmedal"><div class="medal" id="resMedal"></div><div><div class="st" id="resSub">Through the cloud</div><div class="tt num" id="resTime">0:00.0</div></div></div>
+    <div class="score num" id="resScore"></div>
+    <div class="row">
+      <button class="btn" data-act="quit"><svg class="i"><use href="#i-exit"/></svg>River</button>
+      <button class="btn primary" data-act="retry"><svg class="i"><use href="#i-restart"/></svg>Fly again<span class="kbd" style="margin-left:6px">R</span></button>
+    </div>
+  </section>
+</div>
+
+<div id="hint">Click to enable sound · Space to let go</div>
+<div id="fade"></div>
+<div id="dbg"></div>
+<div id="loader"><div class="in">
+  <div class="logo">Lantern <b>Night</b></div>
+  <div class="bar"><i id="loadBar"></i></div>
+  <div id="loadTip">Khom loi: paper on a wire hoop, lifted by a little fuel cell. On Yi Peng, the full moon of the twelfth month, Chiang Mai lets thousands go at once.</div>
+  <div id="loadStep">Starting</div>
+</div></div>
+<div id="fatal" role="alertdialog" aria-label="Error"><div class="card glass"><h2 style="margin:0 0 8px;font-size:17px">Can't start</h2><p id="fatalMsg" style="color:var(--text2);margin:0"></p></div></div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
